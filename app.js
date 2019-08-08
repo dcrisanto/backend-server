@@ -5,10 +5,23 @@ var express = require('express');
 // Hacer referencia a la librería de mongoose
 var mongoose = require('mongoose')
 
+var bodyParser = require('body-parser');
+
 
 
 // Inicializar variables, de esta manera defino el servidor express
 var app = express();
+
+// Body Parser, declarar Mildeware: siempre se ejecutan
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }))
+    // parse application/json
+app.use(bodyParser.json())
+
+
+// Importar rutas
+var appRoutes = require('./routes/app');
+var userRoutes = require('./routes/user');
 
 // Establecer la conexión a la base de datos
 mongoose.connection.openUri('mongodb://localhost:27017/hospitalDB', (err, resp) => {
@@ -18,15 +31,13 @@ mongoose.connection.openUri('mongodb://localhost:27017/hospitalDB', (err, resp) 
     console.log('Base de datos: \x1b[32m%s\x1b[0m', 'online');
 })
 
-// Rutas app: hace referencia al express, ejemplp-get: 'que tipo de procedimiento, servicio, petición se 
-// quiere ejecutar, '/': path
-app.get('/', (req, res, next) => {
-    // Enviar las respuestas a las solicitudes .json(para que la respuesta sea de formato json)
-    res.status(200).json({
-        ok: true,
-        message: 'Petición realizada correctamente'
-    });
-});
+// Rutas: Definiendo para poder usarla
+// Declarar Mildeware: se ejecuta antes de que se resuelvan otras rutas
+// Cuando cualquier petición haga math con la pleca se usará appRooutes
+app.use('/user', userRoutes); // Delante porque sino siempre pasaría por la ruta de abajo
+app.use('/', appRoutes);
+
+
 
 // Escuchar peticiones (puerto, mensaje)
 app.listen(3000, () => {
