@@ -38,6 +38,59 @@ app.get('/', (req, res, next) => {
 });
 
 // ================================================================================
+// Actualizar usuario :id indico que es un recurso necesario que debe enviar
+// ================================================================================
+
+app.put('/:id', (req, res) => {
+    var id = req.params.id;
+    var body = req.body;
+
+    User.findById(id, (err, user) => {
+        if (err) {
+            return res.status(500).json({
+                ok: false,
+                message: 'Error al buscar usuario',
+                errors: err
+            })
+        }
+
+        if (!user) {
+            return res.status(400).json({
+                ok: false,
+                message: 'Error al no encontrar usuario con el id ' + id,
+                errors: err
+            });
+        }
+
+        user.name = body.name;
+        user.email = body.email;
+        user.rol = body.rol;
+
+        // Grabar el usuario actualizado
+
+        user.save((err, updatedUser) => {
+            if (err) {
+                return res.status(400).json({
+                    ok: false,
+                    message: 'Error al actualizar usuario con el id ' + id,
+                    errors: err
+                });
+            }
+
+            updatedUser.password = ':)';
+
+            res.status(200).json({
+                ok: true,
+                updatedUser
+            })
+
+
+        })
+    })
+
+});
+
+// ================================================================================
 // Crear un nuevo usuario
 // ================================================================================
 
