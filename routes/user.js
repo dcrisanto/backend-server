@@ -82,11 +82,10 @@ app.put('/:id', (req, res) => {
             res.status(200).json({
                 ok: true,
                 updatedUser
-            })
+            });
 
-
-        })
-    })
+        });
+    });
 
 });
 
@@ -129,6 +128,37 @@ app.post('/', (req, res) => {
 
     });
 
+});
+
+// ================================================================================
+// Borrar un usuario por el id
+// ================================================================================
+
+app.delete('/:id', (req, res) => {
+    var id = req.params.id;
+    User.findByIdAndRemove(id, (err, userDelete) => {
+        if (err) {
+            return res.status(500).json({
+                ok: false,
+                menssage: 'Error al remover user',
+                errors: err
+            });
+        }
+
+        if (!userDelete) {
+            return res.status(400).json({
+                ok: false,
+                menssage: 'No existe un usuario con el ' + id,
+                errors: { menssage: 'No existe un usuario con el ' + id }
+            })
+        }
+
+        res.status(200).json({
+            ok: true,
+            message: 'Usuario removido',
+            userDelete
+        });
+    });
 });
 
 // Usar fuera
