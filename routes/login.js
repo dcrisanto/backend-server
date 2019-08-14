@@ -1,6 +1,8 @@
 var express = require('express');
 // Para hacer maps de la contraseña que se ingresa con la que se encuentra en la base de datos
 var bcrypt = require('bcryptjs');
+// Para crear un token
+var jwt = require('jsonwebtoken')
 
 var app = express();
 
@@ -40,11 +42,14 @@ app.post('/', (req, res) => {
         }
 
         // Crear un token, ya estamos en el caso que el correo y contraseña son válidos
-
+        // Definimos el token, sign(data que quiero colocar en el token: payload): firmar
+        userDB.password = ':)'; // Para no mostrar el password
+        var token = jwt.sign({ user: userDB }, '@este es un token único@', { expiresIn: 10800 })
         res.status(200).json({
             ok: true,
             message: 'Login',
             user: userDB,
+            token: token,
             id: userDB._id
         });
     });
