@@ -3,6 +3,8 @@ var express = require('express');
 var bcrypt = require('bcryptjs');
 // Para crear un token
 var jwt = require('jsonwebtoken')
+    // Para usar la variable creada con el cit
+var SEED = require('../config/config').SEED;
 
 var app = express();
 
@@ -44,7 +46,7 @@ app.post('/', (req, res) => {
         // Crear un token, ya estamos en el caso que el correo y contraseña son válidos
         // Definimos el token, sign(data que quiero colocar en el token: payload): firmar
         userDB.password = ':)'; // Para no mostrar el password
-        var token = jwt.sign({ user: userDB }, '@este es un token único@', { expiresIn: 10800 })
+        var token = jwt.sign({ user: userDB }, SEED, { expiresIn: 10800 })
         res.status(200).json({
             ok: true,
             message: 'Login',

@@ -38,6 +38,20 @@ app.get('/', (req, res, next) => {
 });
 
 // ================================================================================
+// Verificar token: MilderWare
+// ================================================================================
+// Se coloca aquí debido a que todos los métodos que están después lo van a utilizar,
+// Por lo que tienen  que pasar antes por el milderware, es decir cualquier ruta
+// que se encuentre debajo de esta paso antes por aqui
+// si queremos recibir el token por el url '/:token'
+app.use('/', (req, res, next) => {
+    // recibiendo el token
+    var token = req.query.token;
+
+})
+
+
+// ================================================================================
 // Actualizar usuario :id indico que es un recurso necesario que debe enviar
 // ================================================================================
 
