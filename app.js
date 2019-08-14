@@ -22,6 +22,7 @@ app.use(bodyParser.json())
 // Importar rutas
 var appRoutes = require('./routes/app');
 var userRoutes = require('./routes/user');
+var loginRoutes = require('./routes/login');
 
 // Establecer la conexión a la base de datos
 mongoose.connection.openUri('mongodb://localhost:27017/hospitalDB', (err, resp) => {
@@ -35,6 +36,7 @@ mongoose.connection.openUri('mongodb://localhost:27017/hospitalDB', (err, resp) 
 // Declarar Mildeware: se ejecuta antes de que se resuelvan otras rutas
 // Cuando cualquier petición haga math con la pleca se usará appRooutes
 app.use('/user', userRoutes); // Delante porque sino siempre pasaría por la ruta de abajo
+app.use('/login', loginRoutes);
 app.use('/', appRoutes);
 
 
