@@ -1,7 +1,7 @@
 var express = require('express');
 // Para hacer maps de la contraseña que se ingresa con la que se encuentra en la base de datos
 var bcrypt = require('bcryptjs');
-// Para crear un token
+// Importando la librería del jwt
 var jwt = require('jsonwebtoken')
     // Para usar la variable creada con el cit
 var SEED = require('../config/config').SEED;

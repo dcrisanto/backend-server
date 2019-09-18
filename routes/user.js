@@ -1,6 +1,12 @@
 var express = require('express');
 // uso de la librería bcrypt para encriptar la contraseña
 var bcrypt = require('bcryptjs');
+// importando la librería del jwt
+var jwt = require('jsonwebtoken');
+// Para usar la variable del cit
+// var SEED = require('../config/config').SEED;
+// Importar lo del milddelware
+var mdAuthenticacion = require('../milddlerwares/autenticacion');
 
 var app = express();
 
@@ -38,24 +44,10 @@ app.get('/', (req, res, next) => {
 });
 
 // ================================================================================
-// Verificar token: MilderWare
-// ================================================================================
-// Se coloca aquí debido a que todos los métodos que están después lo van a utilizar,
-// Por lo que tienen  que pasar antes por el milderware, es decir cualquier ruta
-// que se encuentre debajo de esta paso antes por aqui
-// si queremos recibir el token por el url '/:token'
-app.use('/', (req, res, next) => {
-    // recibiendo el token
-    var token = req.query.token;
-
-})
-
-
-// ================================================================================
 // Actualizar usuario :id indico que es un recurso necesario que debe enviar
 // ================================================================================
 
-app.put('/:id', (req, res) => {
+app.put('/:id', mdAuthenticacion.verificationToken, (req, res) => {
     var id = req.params.id;
     var body = req.body;
 
@@ -106,8 +98,9 @@ app.put('/:id', (req, res) => {
 // ================================================================================
 // Crear un nuevo usuario
 // ================================================================================
-
-app.post('/', (req, res) => {
+// Se envía como 2 parámetro, y no se coloca como función para que se ejecute cuando
+// sea ejecutada esa petición
+app.post('/', mdAuthenticacion.verificationToken, (req, res) => {
     // Extraemos body: En la parte del post recibiré la información que la persona envíe mediante un post:
     var body = req.body; // sólo funcionará si se tiene el parser
 
@@ -137,7 +130,8 @@ app.post('/', (req, res) => {
         res.status(201).json({
             ok: true,
             message: 'Usuario creado',
-            user: userSave // user: nombre de la propiedad que retorno y userSave: base de datos
+            user: userSave, // user: nombre de la propiedad que retorno y userSave: base de datos
+            userToken: req.user
         });
 
     });
@@ -148,7 +142,7 @@ app.post('/', (req, res) => {
 // Borrar un usuario por el id
 // ================================================================================
 
-app.delete('/:id', (req, res) => {
+app.delete('/:id', mdAuthenticacion.verificationToken, (req, res) => {
     var id = req.params.id;
     User.findByIdAndRemove(id, (err, userDelete) => {
         if (err) {
