@@ -13,11 +13,15 @@ var mdAuthenticacion = require('../milddlerwares/autenticacion');
 // ================================================================================
 // Rutas
 app.get('/', (req, res, next) => {
-
+    // Variable recibida del req para la Paginación
+    var since = req.query.since || 0;
+    since = Number(since);
     //find es gracias a mongo, donde defino el query que quiero usar para la búsqueda
     // {}: quiero que busque todo
     // () => {}: resultado de la búsqueda, viene como un callback
     Hospital.find({})
+        .skip(since)
+        .limit(5)
         // Llenar una propiedad del req utilizo la función populate
         // como 2 parámetro coloco los campos que quiero que muestre
         .populate('user', 'name email')
@@ -30,13 +34,18 @@ app.get('/', (req, res, next) => {
                         errors: err
                     });
                 }
-                // Si no ocurre ningún error
-                res.status(200).json({
-                    ok: true,
-                    message: 'Get de hospital!',
-                    // Regreso el arreglo de todos los hospitales: hospitals: hospitals o simplemente hospitals
-                    hospitals
-                });
+                // Función para el conteo
+                Hospital.count({}, (err, count) => {
+                    // Si no ocurre ningún error
+                    res.status(200).json({
+                        ok: true,
+                        message: 'Get de hospital!',
+                        // Regreso el arreglo de todos los hospitales: hospitals: hospitals o simplemente hospitals
+                        hospitals,
+                        total: count
+                    });
+                })
+
             });
 
 });

@@ -18,11 +18,18 @@ var User = require('../models/user');
 // ================================================================================
 // Rutas
 app.get('/', (req, res, next) => {
-
+    // Variable recibida del req para la paginación
+    var since = req.query.since || 0;
+    // Me aseguro que ese parámetro sea un número
+    since = Number(since);
     //find es gracias a mongo, donde defino el query que quiero usar para la búsqueda
     // {}: quiero que busque todo
     // () => {}: resultado de la búsqueda, viene como un callback
     User.find({}, 'name email img roles')
+        // Que se salte la cantidad de los since y muestre los siguientes 5
+        .skip(since)
+        // Limitar la cantidad de registros a mostrar
+        .limit(5)
         .exec(
             (err, users) => {
                 if (err) {
@@ -32,13 +39,18 @@ app.get('/', (req, res, next) => {
                         errors: err
                     });
                 }
-                // Si no ocurre ningún error
-                res.status(200).json({
-                    ok: true,
-                    message: 'Get de usuarios!',
-                    // Regreso el arreglo de todos los usuarios: users: users o simplemente users
-                    users
-                });
+                // Función para el conteo de todos los usuarios existentes
+                User.count({}, (err, count) => {
+                    // Si no ocurre ningún error
+                    res.status(200).json({
+                        ok: true,
+                        message: 'Get de usuarios!',
+                        // Regreso el arreglo de todos los usuarios: users: users o simplemente users
+                        users,
+                        total: count
+                    });
+                })
+
             })
 
 });

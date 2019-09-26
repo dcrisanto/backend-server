@@ -13,7 +13,10 @@ var mdAuthenticacion = require('../milddlerwares/autenticacion');
 // ================================================================================
 
 app.get('/', (req, res, next) => {
+    var since = req.query.since || 0;
+    since = Number(since);
     Doctor.find({})
+        .skip(since)
         .populate('user', 'name email')
         .populate('hospital')
         .exec(
@@ -25,12 +28,15 @@ app.get('/', (req, res, next) => {
                         errors: err
                     });
                 }
+                Doctor.count({}, (err, count) => {
+                    res.status(200).json({
+                        ok: true,
+                        message: 'Get de doctor!',
+                        doctors,
+                        total: count
+                    });
+                })
 
-                res.status(200).json({
-                    ok: true,
-                    message: 'Get de doctor!',
-                    doctors
-                });
             });
 })
 
