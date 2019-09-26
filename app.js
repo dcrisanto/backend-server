@@ -23,6 +23,8 @@ app.use(bodyParser.json())
 var appRoutes = require('./routes/app');
 var userRoutes = require('./routes/user');
 var loginRoutes = require('./routes/login');
+var hospitalRoutes = require('./routes/hospital');
+var doctorRoutes = require('./routes/doctor')
 
 // Establecer la conexión a la base de datos
 mongoose.connection.openUri('mongodb://localhost:27017/hospitalDB', (err, resp) => {
@@ -37,7 +39,10 @@ mongoose.connection.openUri('mongodb://localhost:27017/hospitalDB', (err, resp) 
 // Cuando cualquier petición haga math con la pleca se usará appRooutes
 app.use('/user', userRoutes); // Delante porque sino siempre pasaría por la ruta de abajo
 app.use('/login', loginRoutes);
+app.use('/hospital', hospitalRoutes);
+app.use('/doctor', doctorRoutes);
 app.use('/', appRoutes);
+
 
 
 
