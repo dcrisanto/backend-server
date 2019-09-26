@@ -18,6 +18,9 @@ app.get('/', (req, res, next) => {
     // {}: quiero que busque todo
     // () => {}: resultado de la búsqueda, viene como un callback
     Hospital.find({})
+        // Llenar una propiedad del req utilizo la función populate
+        // como 2 parámetro coloco los campos que quiero que muestre
+        .populate('user', 'name email')
         .exec(
             (err, hospitals) => {
                 if (err) {

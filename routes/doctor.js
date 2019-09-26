@@ -13,7 +13,9 @@ var mdAuthenticacion = require('../milddlerwares/autenticacion');
 // ================================================================================
 
 app.get('/', (req, res, next) => {
-    Doctor.find({}, 'name img user hospital')
+    Doctor.find({})
+        .populate('user', 'name email')
+        .populate('hospital')
         .exec(
             (err, doctors) => {
                 if (err) {
@@ -58,7 +60,7 @@ app.put('/:id', mdAuthenticacion.verificationToken, (req, res) => {
 
         doctor.name = body.name;
         doctor.img = body.img;
-        doctor.user = body.user; //req.user._id;
+        doctor.user = req.user._id;
         doctor.hospital = body.hospital
 
         // Grabar el doctor actualizado
@@ -90,7 +92,7 @@ app.post('/', mdAuthenticacion.verificationToken, (req, res) => {
     var doctor = new Doctor({
         name: body.name,
         img: body.img,
-        user: body.user; //req.user._id,
+        user: req.user._id, //req.user._id,
         hospital: body.hospital
 
     });
