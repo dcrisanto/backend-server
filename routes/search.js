@@ -9,6 +9,49 @@ var Doctor = require('../models/doctor');
 // Importando el modelo User para la bpusqueda de usuarios
 var User = require('../models/user');
 
+// ================================================================================
+// Búsqueda por colección
+// ================================================================================
+app.get('/collection/:table/:search', (req, res) => {
+    var table = req.params.table;
+    var search = req.params.search;
+    var regex = new RegExp(search, 'i');
+    var promise;
+    switch (table) {
+
+        case 'hospitals':
+            promise = searchHospitals(search, regex);
+            break;
+
+        case 'doctors':
+            promise = searchDoctors(search, regex);
+            break;
+
+        case 'users':
+            promise = searchUsers(search, regex);
+            break;
+
+        default:
+            return res.status(400).json({
+                ok: false,
+                message: 'Los tipos de búsqueda sólo son: users, hospitals y doctors',
+                err: { message: 'Tipo de tabla/collection no válido' }
+            })
+    }
+
+
+    promise.then(data => {
+        res.status(200).json({
+            ok: true,
+            message: 'Petición realizada correctamente',
+            // []: Colocar entre llaves para obtener el valor de table dinamicamente
+            [table]: data
+        });
+    });
+});
+// ================================================================================
+// Búsqueda general
+// ================================================================================
 app.get('/all/:search', (req, res, next) => {
     // Extraer el parámetro de búsqueda
     var search = req.params.search;
@@ -52,6 +95,7 @@ function searchDoctors(search, regex) {
     return new Promise((resolve, reject) => {
         Doctor.find({ name: regex })
             .populate('user', 'name email')
+            .populate('hospital')
             .exec((err, doctors) => {
                 if (err) {
                     reject('Error al cargar Doctores', err);
