@@ -12,14 +12,19 @@ app.get('/all/:search', (req, res, next) => {
     var search = req.params.search;
     // Expresión regular para una búsqueda de coincidencias
     var regex = new RegExp(search, 'i')
-        // Llamo a la función searchHospitals recibiendo los parámetros
-    searchHospitals(search, regex)
-        // recibo la salida hospitals del resolve
-        .then(hospitals => {
+        // Permite enviar un arreglo de promesas, ejecutarlas y si todas responden ok 
+        // permite disparar un then y si no disparar un cath
+    Promise.all([searchHospitals(search, regex),
+            searchDoctors(search, regex)
+        ])
+        // recibir un arreglo con las respuestas
+        .then(response => {
+            // recibo la salida hospitals del resolve
             res.status(200).json({
                 ok: true,
                 message: 'Petición realizada correctamente',
-                hospitals
+                hospitals: response[0],
+                doctors: response[1]
             });
         });
 });
@@ -29,9 +34,21 @@ function searchHospitals(search, regex) {
         // name: search => busca especificamente el texto ingresado
         Hospital.find({ name: regex }, (err, hospitals) => {
             if (err) {
-                reject('Error a cargar hospitales', err);
+                reject('Error al cargar hospitales', err);
             } else {
                 resolve(hospitals);
+            }
+        });
+    });
+}
+
+function searchDoctors(search, regex) {
+    return new Promise((resolve, reject) => {
+        Doctor.find({ name: regex }, (err, doctors) => {
+            if (err) {
+                reject('Error al cargar Doctores', err);
+            } else {
+                resolve(doctors)
             }
         });
     });
