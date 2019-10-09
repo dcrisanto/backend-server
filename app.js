@@ -26,7 +26,7 @@ var loginRoutes = require('./routes/login');
 var hospitalRoutes = require('./routes/hospital');
 var doctorRoutes = require('./routes/doctor');
 var searchRoutes = require('./routes/search');
-//var collectionRoutes = require('./routes/collection')
+var uploadRoutes = require('./routes/upload');
 
 // Establecer la conexión a la base de datos
 mongoose.connection.openUri('mongodb://localhost:27017/hospitalDB', (err, resp) => {
@@ -44,7 +44,7 @@ app.use('/login', loginRoutes);
 app.use('/hospital', hospitalRoutes);
 app.use('/doctor', doctorRoutes);
 app.use('/search', searchRoutes);
-//app.use('/collection', collectionRoutes);
+app.use('/upload', uploadRoutes);
 app.use('/', appRoutes);
 
 
