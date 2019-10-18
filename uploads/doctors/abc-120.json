@@ -1,0 +1,42 @@
+{
+	"info": {
+		"_postman_id": "f4e6934c-ef85-4f01-9bc9-fefcf204c16d",
+		"name": "API_DEV_ConciliacionRENIEC",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Request_SignDocumentDigitally",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": ""
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Request_SkipDocumentSignature",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": ""
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Request2_SkipDocumentSignature",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": ""
+				}
+			},
+			"response": []
+		}
+	]
+}
