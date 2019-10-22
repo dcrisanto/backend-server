@@ -21,7 +21,7 @@ app.get('/', (req, res, next) => {
     // () => {}: resultado de la búsqueda, viene como un callback
     Hospital.find({})
         .skip(since)
-        .limit(5)
+        .limit(9)
         // Llenar una propiedad del req utilizo la función populate
         // como 2 parámetro coloco los campos que quiero que muestre
         .populate('user', 'name email')
