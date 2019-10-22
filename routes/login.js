@@ -9,7 +9,61 @@ var SEED = require('../config/config').SEED;
 var app = express();
 
 var Usuario = require('../models/user');
+// Google
+const CLIENT_ID = require('../config/config').CLIENT_ID;
+const { OAuth2Client } = require('google-auth-library');
+const client = new OAuth2Client(CLIENT_ID);
 
+// ================================================================================
+// Authentication google
+// ================================================================================
+// async indica que retorna una promesa
+async function verify(token) {
+    // await espera a que esto(verifyIdToken) resuelva y cuando lo haga lo graba en ticket
+    const ticket = await client.verifyIdToken({
+        idToken: token,
+        audience: CLIENT_ID, // Specify the CLIENT_ID of the app that accesses the backend
+        // Or, if multiple clients access the backend:
+        //[CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3]
+    });
+    // payload: esta toda la información del usuario
+    const payload = ticket.getPayload();
+    // const userid = payload['sub'];
+    // If request specified a G Suite domain:
+    //const domain = payload['hd'];
+    // Se retorna solo lo necesario
+    return {
+        name: payload.name,
+        email: payload.email,
+        img: payload.picture,
+        googleUser: true,
+        payload
+    }
+}
+
+// coloco async para poder utilizar el await
+app.post('/google', async(req, res) => {
+    const token = req.body.token;
+    const googleUser = await verify(token)
+        // Si no es válido el token disparará un catch
+        .catch(e => {
+            return res.status(403).json({
+                ok: false,
+                message: 'Token no válido'
+            })
+        })
+    return res.status(200).json({
+        ok: true,
+        message: 'Authentication with google',
+        googleUser
+    });
+});
+
+
+
+// ================================================================================
+// Authentication normal
+// ================================================================================
 app.post('/', (req, res) => {
     var body = req.body;
     // Verificando que exista un usuario con el correo electrónico
