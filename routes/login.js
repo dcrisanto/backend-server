@@ -8,9 +8,11 @@ var SEED = require('../config/config').SEED;
 
 var app = express();
 
-var Usuario = require('../models/user');
+var User = require('../models/user');
 // Google
+// Importando el ClientId
 const CLIENT_ID = require('../config/config').CLIENT_ID;
+// Extrae el OAuth2Client de la librería
 const { OAuth2Client } = require('google-auth-library');
 const client = new OAuth2Client(CLIENT_ID);
 
@@ -26,6 +28,7 @@ async function verify(token) {
         // Or, if multiple clients access the backend:
         //[CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3]
     });
+
     // payload: esta toda la información del usuario
     const payload = ticket.getPayload();
     // const userid = payload['sub'];
@@ -36,27 +39,96 @@ async function verify(token) {
         name: payload.name,
         email: payload.email,
         img: payload.picture,
-        googleUser: true,
-        payload
+        google: true
     }
 }
 
 // coloco async para poder utilizar el await
 app.post('/google', async(req, res) => {
-    const token = req.body.token;
+    let token = req.body.token;
+    // El await para indicarle que espere la respuesta de la función verify y envía el token            
     const googleUser = await verify(token)
         // Si no es válido el token disparará un catch
         .catch(e => {
             return res.status(403).json({
                 ok: false,
                 message: 'Token no válido'
-            })
-        })
-    return res.status(200).json({
+            });
+        });
+    // Verificar que el usuario ya se encuentre registrado en mi base de datos
+    // condición sería el email y recibiría un error o el user
+    User.findOne({ email: googleUser.email }, (err, userDB) => {
+        // Error de base de datos
+        if (err) {
+            return res.status(500).json({
+                ok: false,
+                message: 'Error al bucar usuario',
+                errors: err
+            });
+        }
+        // Usuario existe en la base de datos
+        if (userDB) {
+            // Si el usuario no fue autenticado por google 
+            if (userDB.google === false) {
+                return res.status(400).json({
+                    ok: false,
+                    message: 'Debe usar su autenticación normal',
+                    userDB
+                });
+            } else { // Usuario ya fue autenticado con google previamente
+                var token = jwt.sign({ user: userDB }, SEED, { expiresIn: 10800 })
+                res.status(200).json({
+                    ok: true,
+                    message: 'Autenticación de google ok',
+                    user: userDB,
+                    token: token,
+                    id: userDB._id
+                });
+            }
+        }
+        if (!userDB) {
+            // El usuario no existe ...hay que crearlo
+            // Creando una instancia de user
+            const user = new User({
+                // Estableciendo los valores que tendría el user
+                name: googleUser.name,
+                email: googleUser.email,
+                img: googleUser.img,
+                google: googleUser.google,
+                password: ':)',
+
+            });
+
+
+            user.save((err, userDB) => {
+                var token = jwt.sign({ user: userDB }, SEED, { expiresIn: 10800 });
+
+                // Si ocurre un error
+                if (err) {
+                    return res.status(500).json({
+                        ok: false,
+                        message: 'Error al crear usuario de google',
+                        errors: err
+                    });
+                }
+                // Si está todo ok, envío respuesta 201: Recurso creado
+                res.status(201).json({
+                    ok: true,
+                    message: 'Usuario creado por google',
+                    token: token,
+                    user: userDB,
+                    id: userDB._id
+
+                });
+            });
+
+        }
+    });
+    /*return res.status(200).json({
         ok: true,
         message: 'Authentication with google',
         googleUser
-    });
+    });*/
 });
 
 
@@ -68,7 +140,7 @@ app.post('/', (req, res) => {
     var body = req.body;
     // Verificando que exista un usuario con el correo electrónico
     // la condición de búsqueda: mientras que el email sea = a body.email
-    Usuario.findOne({ email: body.email }, (err, userDB) => {
+    User.findOne({ email: body.email }, (err, userDB) => {
 
         if (err) {
             return res.status(500).json({

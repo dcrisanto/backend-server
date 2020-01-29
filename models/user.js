@@ -16,7 +16,8 @@ var userSchema = new Schema({
     password: { type: String, required: [true, 'La contraseña es necesaria'] },
     img: { type: String, required: false },
     // Para que aplique el validator de los roles
-    rol: { type: String, required: true, default: 'USER_ROLE', enum: rolesValidators }
+    rol: { type: String, required: true, default: 'USER_ROL', enum: rolesValidators },
+    google: { type: Boolean, default: false }
 });
 
 // Para indicar que en el esquema estará el uniqueValidator:
