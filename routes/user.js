@@ -25,7 +25,7 @@ app.get('/', (req, res, next) => {
     //find es gracias a mongo, donde defino el query que quiero usar para la búsqueda
     // {}: quiero que busque todo
     // () => {}: resultado de la búsqueda, viene como un callback
-    User.find({}, 'name email img roles')
+    User.find({}, 'name email img rol google')
         // Que se salte la cantidad de los since y muestre los siguientes 5
         .skip(since)
         // Limitar la cantidad de registros a mostrar
@@ -69,7 +69,7 @@ app.put('/:id', mdAuthenticacion.verificationToken, (req, res) => {
                 ok: false,
                 message: 'Error al buscar usuario',
                 errors: err
-            })
+            });
         }
 
         if (!user) {
@@ -112,7 +112,8 @@ app.put('/:id', mdAuthenticacion.verificationToken, (req, res) => {
 // ================================================================================
 // Se envía como 2 parámetro, y no se coloca como función para que se ejecute cuando
 // sea ejecutada esa petición
-app.post('/', mdAuthenticacion.verificationToken, (req, res) => {
+// Retiré en la creación de usuarios la validación del token mdAuthenticacion.verificationToken,
+app.post('/', (req, res) => {
     // Extraemos body: En la parte del post recibiré la información que la persona envíe mediante un post:
     var body = req.body; // sólo funcionará si se tiene el parser
 

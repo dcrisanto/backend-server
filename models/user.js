@@ -22,7 +22,7 @@ var userSchema = new Schema({
 
 // Para indicar que en el esquema estará el uniqueValidator:
 // Al colocar PATH: Lee la propiedad que tenga unique
-userSchema.plugin(uniqueValidator, { message: '{PATH} debe de ser único' });
+userSchema.plugin(uniqueValidator, { message: '{PATH} ya se encuentra registrado' });
 
 // Exportamos para poder usar este esquema fuera de este archivo ('nombre que quiero que tenga el esquema', 
 // 'objeto que quiero que relacione')

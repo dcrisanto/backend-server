@@ -17,7 +17,8 @@ app.get('/', (req, res, next) => {
     since = Number(since);
     Doctor.find({})
         .skip(since)
-        .populate('user', 'name email')
+        .limit(5)
+        .populate('user', 'name img email')
         .populate('hospital')
         .exec(
             (err, doctors) => {
@@ -38,6 +39,40 @@ app.get('/', (req, res, next) => {
                 })
 
             });
+})
+
+// ================================================================================
+// Obtener médico por Id
+
+app.get('/:id', (req, res) => {
+    var id = req.params.id;
+
+    Doctor.findById(id)
+        .populate('user')
+        .populate('hospital')
+        .exec((err, medic) => {
+            if (err) {
+                return status(500).json({
+                    ok: false,
+                    menssage: 'Error al buscar médico',
+                    errors: err
+                });
+            }
+
+            if (!medic) {
+                return res.status(400).json({
+                    ok: false,
+                    menssage: 'El médico con el ' + id + 'no existe',
+                    errors: { menssage: 'No existe un médico con ese ID' }
+                });
+            }
+
+            res.status(200).json({
+                ok: true,
+                medic
+            });
+        })
+
 })
 
 // ================================================================================
@@ -95,10 +130,10 @@ app.post('/', mdAuthenticacion.verificationToken, (req, res) => {
     // Extrayendo información del body
     var body = req.body;
     // Creando un nuevo hospital
-    var doctor = new Doctor({
+    let doctor = new Doctor({
         name: body.name,
         img: body.img,
-        user: req.user._id, //req.user._id,
+        user: req.user._id,
         hospital: body.hospital
 
     });

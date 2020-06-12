@@ -89,7 +89,7 @@ app.post('/google', async(req, res) => {
         if (!userDB) {
             // El usuario no existe ...hay que crearlo
             // Creando una instancia de user
-            const user = new User({
+            let user = new User({
                 // Estableciendo los valores que tendría el user
                 name: googleUser.name,
                 email: googleUser.email,
@@ -180,6 +180,7 @@ app.post('/', (req, res) => {
             token: token,
             id: userDB._id
         });
+
     });
 
 

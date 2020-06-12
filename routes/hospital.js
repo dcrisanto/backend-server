@@ -21,10 +21,10 @@ app.get('/', (req, res, next) => {
     // () => {}: resultado de la búsqueda, viene como un callback
     Hospital.find({})
         .skip(since)
-        .limit(9)
+        .limit(5)
         // Llenar una propiedad del req utilizo la función populate
         // como 2 parámetro coloco los campos que quiero que muestre
-        .populate('user', 'name email')
+        .populate('user', 'name img')
         .exec(
             (err, hospitals) => {
                 if (err) {
@@ -44,11 +44,46 @@ app.get('/', (req, res, next) => {
                         hospitals,
                         total: count
                     });
-                })
+                });
 
             });
 
 });
+
+// ================================================================================
+// Obtener hospital por Id
+
+app.get('/:id', (req, res) => {
+    var id = req.params.id;
+    var since = req.query.since || 0;
+    since = Number(since);
+
+    Hospital.findById(id)
+        .populate('user', 'name img email')
+        .exec((err, hospital) => {
+            if (err) {
+                return status(500).json({
+                    ok: false,
+                    menssage: 'Error al buscar hospital',
+                    errors: err
+                });
+            }
+
+            if (!hospital) {
+                return res.status(400).json({
+                    ok: false,
+                    menssage: 'El hospital con el ' + id + 'no existe',
+                    errors: { menssage: 'No existe un hospital con ese ID' }
+                });
+            }
+
+            res.status(200).json({
+                ok: true,
+                hospital: hospital
+            });
+        })
+
+})
 
 // ================================================================================
 // Actualizar hospital

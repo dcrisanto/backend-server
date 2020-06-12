@@ -4,7 +4,6 @@ const path = require('path');
 const fs = require('fs');
 
 app.get('/:type/:img', (req, res, next) => {
-    // :type/:img
     const type = req.params.type;
     const img = req.params.img;
     // Me ayuda a resolver siempre este path para que quede correcto
@@ -16,7 +15,7 @@ app.get('/:type/:img', (req, res, next) => {
     if (fs.existsSync(pathImage)) {
         res.sendFile(pathImage);
     } else {
-        const pathNoImage = path.resolve(__dirname, '../assets/no-img.jpg');
+        const pathNoImage = path.resolve(__dirname, '../assets/user.png');
         res.sendFile(pathNoImage);
     }
 });
