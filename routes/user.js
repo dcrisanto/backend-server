@@ -59,7 +59,7 @@ app.get('/', (req, res, next) => {
 // Actualizar usuario :id indico que es un recurso necesario que debe enviar
 // ================================================================================
 
-app.put('/:id', mdAuthenticacion.verificationToken, (req, res) => {
+app.put('/:id', [mdAuthenticacion.verificationToken, mdAuthenticacion.vericationAdmin], (req, res) => {
     var id = req.params.id;
     var body = req.body;
 
@@ -155,7 +155,7 @@ app.post('/', (req, res) => {
 // Borrar un usuario por el id
 // ================================================================================
 
-app.delete('/:id', mdAuthenticacion.verificationToken, (req, res) => {
+app.delete('/:id', [mdAuthenticacion.verificationToken, mdAuthenticacion.vericationAdmin], (req, res) => {
     var id = req.params.id;
     User.findByIdAndRemove(id, (err, userDelete) => {
         if (err) {

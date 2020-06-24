@@ -35,3 +35,25 @@ exports.verificationToken = (req, res, next) => {
     });
 
 }
+
+// ================================================================================
+// Verificar Admin
+// ================================================================================
+
+exports.vericationAdmin = (req, res, next) => {
+    // Obteniendo las propiedades del objeto user
+    var user = req.user;
+    // Si el rol del usuario es administrador se debe ejecutar los demás procesos
+    if (user.rol === 'ADMIN_ROL') {
+        next();
+        return;
+    } else {
+        return res.status(401).json({
+            ok: false,
+            menssage: 'Token incorrecto - No es usuario administrador',
+            errors: { menssage: 'No es administrador' }
+
+        });
+    }
+
+}

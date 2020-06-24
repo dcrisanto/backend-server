@@ -82,7 +82,9 @@ app.post('/google', async(req, res) => {
                     message: 'Autenticación de google ok',
                     user: userDB,
                     token: token,
-                    id: userDB._id
+                    id: userDB._id,
+                    // Regreso un objeto menu de tipo getMenu
+                    menu: getMenu(userDB.rol)
                 });
             }
         }
@@ -178,12 +180,45 @@ app.post('/', (req, res) => {
             message: 'Login',
             user: userDB,
             token: token,
-            id: userDB._id
+            id: userDB._id,
+            menu: getMenu(userDB.rol)
         });
 
     });
 
-
 });
+
+function getMenu(ROLE) {
+    var menu = [{
+            title: 'Principal',
+            icon: 'mdi mdi-gauge',
+            submenu: [
+                // Si no se coloca pleca indico indico que es para manejar una sub-ruta.
+                { title: 'Dashboard', url: '/dashboard' },
+                { title: 'ProgressBar', url: '/progress' },
+                { title: 'Gráficas', url: '/graficas1' },
+                { title: 'Promises', url: '/promises' },
+                { title: 'Rxjs', url: '/rxjs' }
+            ]
+        },
+        {
+            title: 'Mantenimiento',
+            icon: 'mdi mdi-folder-lock-open',
+            submenu: [
+                //{ title: 'Users', url: '/users' },
+                { title: 'Hospitals', url: '/hospitals' },
+                { title: 'Medics', url: '/medics' }
+            ]
+        }
+    ];
+
+    if (ROLE === 'ADMIN_ROL') {
+        // De la primera posición, quiero que busque el submenu y adicionar
+        // unshitf lo coloca al principio y el push al final
+        menu[1].submenu.unshift({ title: 'Users', url: '/users' })
+    }
+
+    return menu;
+}
 
 module.exports = app;
