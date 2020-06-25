@@ -50,7 +50,31 @@ exports.vericationAdmin = (req, res, next) => {
     } else {
         return res.status(401).json({
             ok: false,
-            menssage: 'Token incorrecto - No es usuario administrador',
+            menssage: 'Token incorrecto - No es administrador',
+            errors: { menssage: 'No es administrador' }
+
+        });
+    }
+
+}
+
+// ================================================================================
+// Verificar Admin o mismo usuario
+// ================================================================================
+
+exports.vericationAdmin_o_samerUser = (req, res, next) => {
+    // Obteniendo las propiedades del objeto user
+    var user = req.user;
+    // Recibiendo el id por parámetros
+    var id = req.params.id;
+    // Si el rol del usuario es administrador se debe ejecutar los demás procesos
+    if (user.rol === 'ADMIN_ROL' || user._id === id) {
+        next();
+        return;
+    } else {
+        return res.status(401).json({
+            ok: false,
+            menssage: 'Token incorrecto - No es administrador ni el mismo usuario',
             errors: { menssage: 'No es administrador' }
 
         });

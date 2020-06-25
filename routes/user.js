@@ -59,7 +59,7 @@ app.get('/', (req, res, next) => {
 // Actualizar usuario :id indico que es un recurso necesario que debe enviar
 // ================================================================================
 
-app.put('/:id', [mdAuthenticacion.verificationToken, mdAuthenticacion.vericationAdmin], (req, res) => {
+app.put('/:id', [mdAuthenticacion.verificationToken, mdAuthenticacion.vericationAdmin_o_samerUser], (req, res) => {
     var id = req.params.id;
     var body = req.body;
 
